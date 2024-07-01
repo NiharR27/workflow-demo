@@ -32,7 +32,12 @@ jobs:
         run: |
           release_branch="release-${{ github.event.inputs.version }}"
           echo "branch_name=$release_branch" >> $GITHUB_ENV
-          git checkout -b $release_branch
+          if git ls-remote --heads origin $release_branch; then
+            git checkout $release_branch
+            git pull origin $release_branch
+          else
+            git checkout -b $release_branch
+          fi
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
           git add package.json
           git commit -m "Bump version to ${{ github.event.inputs.version }}"
