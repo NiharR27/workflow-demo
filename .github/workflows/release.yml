@@ -26,18 +26,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install git-flow
 
-      - name: Ensure master branch exists locally
-        run: git fetch origin master:master
-
-      - name: Create temporary branch and fetch develop
+      - name: Fetch and ensure branches are up-to-date
         run: |
-          git checkout -b temp-fetch
           git fetch origin develop:develop
-          git checkout develop
-          git branch -D temp-fetch
+          git fetch origin master:master
 
-      - name: Initialize Git Flow
-        run: git flow init -d
+      - name: Merge develop into master
+        run: |
+          git checkout master
+          git merge develop
+
+      - name: Push merge changes to origin
+        run: git push origin master
 
       - name: Start Git Flow release
         run: git flow release start ${{ github.event.inputs.version }}
