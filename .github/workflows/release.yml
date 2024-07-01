@@ -46,7 +46,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: develop
-          head: ${{ env.branch_name }}
+          branch: ${{ env.branch_name }}
           title: "Release ${{ github.event.inputs.version }} to develop"
           body: "Automated PR to merge release ${{ github.event.inputs.version }} into develop"
 
@@ -76,7 +76,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: master
-          head: develop
+          branch: develop
           title: "Merge develop into master for release ${{ github.event.inputs.version }}"
           body: "Automated PR to merge develop into master after release ${{ github.event.inputs.version }}"
 
