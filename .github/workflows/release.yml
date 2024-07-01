@@ -6,6 +6,7 @@ on:
       version:
         description: "Version number for the release"
         required: true
+        default: "1.0.0"
 
 jobs:
   create_release_branch:
@@ -31,10 +32,12 @@ jobs:
         run: |
           release_branch="release-${{ github.event.inputs.version }}"
           echo "branch_name=$release_branch" >> $GITHUB_ENV
+          git fetch origin
           git checkout -b $release_branch
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
           git add package.json
           git commit -m "Bump version to ${{ github.event.inputs.version }}"
+          git pull --rebase origin $release_branch
           git push origin $release_branch
 
       - name: Create Pull Request to develop
