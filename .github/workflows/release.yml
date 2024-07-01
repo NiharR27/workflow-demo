@@ -63,6 +63,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Debug environment variables
+        run: |
+          echo "branch_name=${{ env }}"
+
       - name: Create Pull Request to develop
         id: pr-develop
         uses: peter-evans/create-pull-request@v3
