@@ -95,4 +95,4 @@ jobs:
       - name: Create Tag
         run: |
           git tag -a v${{ github.event.inputs.version }} -m "Release ${{ github.event.inputs.version }}"
-          git push origin v${{ github.event.inputs.version }}"
+          git push origin v${{ github.event.inputs.version }}
