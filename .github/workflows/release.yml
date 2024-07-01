@@ -27,32 +27,29 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Set release branch name
+        run: echo "release_branch=release-${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
       - name: Check if release branch exists
         id: check_release_branch
         run: |
-          release_branch="release-${{ github.event.inputs.version }}"
-          if git ls-remote --heads origin $release_branch; then
-            echo "::set-output name=branch_exists::true"
+          if git ls-remote --heads origin ${{ env.release_branch }}; then
+            echo "branch_exists=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=branch_exists::false"
+            echo "branch_exists=false" >> $GITHUB_ENV
           fi
 
       - name: Create or switch to release branch
-        if: steps.check_release_branch.outputs.branch_exists == 'false'
         run: |
-          release_branch="release-${{ github.event.inputs.version }}"
-          echo "branch_name=$release_branch" >> $GITHUB_ENV
-          git checkout -b $release_branch
+          if [ "${{ env.branch_exists }}" == "true" ]; then
+            git checkout ${{ env.release_branch }}
+            git pull origin ${{ env.release_branch }}
+          else
+            git checkout -b ${{ env.release_branch }}
+          fi
 
       - name: Fetch all branches and tags
         run: git fetch --prune
-
-      - name: Checkout release branch if it exists
-        if: steps.check_release_branch.outputs.branch_exists == 'true'
-        run: |
-          release_branch="release-${{ github.event.inputs.version }}"
-          git checkout $release_branch
-          git pull origin $release_branch
 
       - name: Bump version in package.json
         run: |
@@ -66,9 +63,7 @@ jobs:
           fi
 
       - name: Push changes to release branch
-        run: |
-          release_branch="release-${{ github.event.inputs.version }}"
-          git push origin $release_branch
+        run: git push origin ${{ env.release_branch }}
 
   create_pr_to_develop:
     needs: create_release_branch
@@ -90,7 +85,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: develop
-          branch: release-${{ github.event.inputs.version }}
+          branch: ${{ env.release_branch }}
           title: "Release ${{ github.event.inputs.version }} to develop"
           body: "Automated PR to merge release ${{ github.event.inputs.version }} into develop"
           commit-message: "[create-pull-request] automated change"
