@@ -6,7 +6,6 @@ on:
       version:
         description: "Version number for the release"
         required: true
-        default: "1.0.0"
 
 jobs:
   create_release_branch:
@@ -39,6 +38,20 @@ jobs:
           git commit -m "Bump version to ${{ github.event.inputs.version }}"
           git push origin $release_branch
 
+  create_pr_to_develop:
+    needs: create_release_branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Set Git config
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
       - name: Create Pull Request to develop
         id: pr-develop
         uses: peter-evans/create-pull-request@v3
@@ -48,21 +61,21 @@ jobs:
           branch: ${{ env.branch_name }}
           title: "Release ${{ github.event.inputs.version }} to develop"
           body: "Automated PR to merge release ${{ github.event.inputs.version }} into develop"
+          commit-message: "[create-pull-request] automated change"
+          committer: "GitHub <noreply@github.com>"
+          author: "NiharR27 <NiharR27@users.noreply.github.com>"
+          signoff: false
+          delete-branch: false
+          draft: false
 
-  create_pr_to_master:
-    needs: create_release_branch
-    if: always()
+  merge_to_master:
+    needs: create_pr_to_develop
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
 
       - name: Set Git config
         run: |
@@ -78,9 +91,15 @@ jobs:
           branch: develop
           title: "Merge develop into master for release ${{ github.event.inputs.version }}"
           body: "Automated PR to merge develop into master after release ${{ github.event.inputs.version }}"
+          commit-message: "[create-pull-request] automated change"
+          committer: "GitHub <noreply@github.com>"
+          author: "NiharR27 <NiharR27@users.noreply.github.com>"
+          signoff: false
+          delete-branch: false
+          draft: false
 
   create_tag:
-    needs: create_pr_to_master
+    needs: merge_to_master
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
