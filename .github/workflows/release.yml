@@ -65,7 +65,7 @@ jobs:
 
       - name: Debug environment variables
         run: |
-          echo "branch_name=${{ env }}"
+          echo "branch_name=${{ env.branch_name }}"
 
       - name: Create Pull Request to develop
         id: pr-develop
