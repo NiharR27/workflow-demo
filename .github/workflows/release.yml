@@ -31,7 +31,7 @@ jobs:
         id: create_release_branch
         run: |
           release_branch="release-${{ github.event.inputs.version }}"
-          echo "::set-output name=branch_name::$release_branch"
+          echo "branch_name=$release_branch" >> $GITHUB_ENV
           git fetch --prune --unshallow
           if git ls-remote --heads origin $release_branch; then
             git checkout $release_branch
@@ -64,17 +64,13 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Get branch name
-        id: get_branch_name
-        run: echo "branch_name=${{ needs.create_release_branch.outputs.branch_name }}"
-
       - name: Create Pull Request to develop
         id: pr-develop
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: develop
-          branch: ${{ needs.create_release_branch.outputs.branch_name }}
+          branch: ${{ env.branch_name }}
           title: "Release ${{ github.event.inputs.version }} to develop"
           body: "Automated PR to merge release ${{ github.event.inputs.version }} into develop"
           commit-message: "[create-pull-request] automated change"
