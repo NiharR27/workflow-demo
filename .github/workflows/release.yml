@@ -1,0 +1,62 @@
+name: Release with Git Flow
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release"
+        required: true
+        default: "1.0.0"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Install Git Flow
+        run: |
+          sudo apt-get update
+          sudo apt-get install git-flow
+
+      - name: Initialize Git Flow
+        run: git flow init -d
+
+      - name: Start Git Flow release
+        run: git flow release start ${{ github.event.inputs.version }}
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          git add package.json
+          git commit -m "Bump version to ${{ github.event.inputs.version }}"
+
+      - name: Finish Git Flow release
+        run: |
+          git flow release finish -m "Release ${{ github.event.inputs.version }}" ${{ github.event.inputs.version }}
+          git push --follow-tags origin develop master
+
+      - name: Create Pull Request to develop
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: develop
+          head: release/${{ github.event.inputs.version }}
+          title: "Merge release ${{ github.event.inputs.version }} into develop"
+          body: "This PR merges release ${{ github.event.inputs.version }} into the develop branch."
+
+      - name: Create Pull Request to master
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: master
+          head: develop
+          title: "Merge release ${{ github.event.inputs.version }} into master"
+          body: "This PR merges the develop branch into the master branch for release ${{ github.event.inputs.version }}."
