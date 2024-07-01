@@ -38,13 +38,8 @@ jobs:
       - name: Create or switch to release branch
         run: |
           release_branch="release/${{ github.event.inputs.version }}"
-          if [ "$branch_exists" == "true" ]; then
-            git checkout $release_branch
-            git pull origin $release_branch
-          else
-            git checkout -b $release_branch
-            git push --set-upstream origin $release_branch
-          fi
+          git checkout -b $release_branch
+          git push --set-upstream origin $release_branch
 
       - name: Bump version in package.json
         run: yarn version --new-version ${{ github.event.inputs.version }} --no-git-tag-version
