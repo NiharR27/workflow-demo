@@ -26,18 +26,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install git-flow
 
-      - name: Fetch and ensure branches are up-to-date
+      - name: Create temporary branch and fetch branches
         run: |
+          git checkout -b temp-branch
           git fetch origin develop:develop
           git fetch origin master:master
 
       - name: Merge develop into master
         run: |
           git checkout master
-          git merge develop
+          git merge develop --no-edit
 
       - name: Push merge changes to origin
         run: git push origin master
+
+      - name: Delete temporary branch
+        run: git branch -D temp-branch
+
+      - name: Initialize Git Flow
+        run: git flow init -d
 
       - name: Start Git Flow release
         run: git flow release start ${{ github.event.inputs.version }}
