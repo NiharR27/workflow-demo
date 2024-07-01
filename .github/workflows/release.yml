@@ -45,7 +45,7 @@ jobs:
           git checkout -b $release_branch
 
       - name: Fetch all branches and tags
-        run: git fetch --prune --unshallow
+        run: git fetch --prune
 
       - name: Checkout release branch if it exists
         if: steps.check_release_branch.outputs.branch_exists == 'true'
