@@ -38,9 +38,15 @@ jobs:
           else
             git checkout -b $release_branch
           fi
-          npm version ${{ github.event.inputs.version }} --no-git-tag-version
-          git add package.json
-          git commit -m "Bump version to ${{ github.event.inputs.version }}"
+
+          current_version=$(node -p "require('./package.json').version")
+          if [ "$current_version" != "${{ github.event.inputs.version }}" ]; then
+            npm version ${{ github.event.inputs.version }} --no-git-tag-version
+            git add package.json
+            git commit -m "Bump version to ${{ github.event.inputs.version }}"
+          else
+            echo "Version not changed, skipping npm version"
+          fi
           git push origin $release_branch
 
   create_pr_to_develop:
