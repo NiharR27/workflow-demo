@@ -30,7 +30,13 @@ jobs:
       - name: Create release branch
         id: create_release_branch
         run: |
-          release_branch="release-${{ github.event.inputs.version }}"; echo "branch_name=$release_branch" >> $GITHUB_ENV; git checkout -b $release_branch; npm version ${{ github.event.inputs.version }} --no-git-tag-version; git add package.json; git commit -m "Bump version to ${{ github.event.inputs.version }}"; git push origin $release_branch
+          release_branch="release-${{ github.event.inputs.version }}"
+          echo "branch_name=$release_branch" >> $GITHUB_ENV
+          git checkout -b $release_branch
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          git add package.json
+          git commit -m "Bump version to ${{ github.event.inputs.version }}"
+          git push origin $release_branch
 
   create_pr_to_develop:
     needs: create_release_branch
@@ -75,6 +81,9 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+
+      - name: Pull latest changes from master
+        run: git pull origin master
 
       - name: Create Pull Request to master
         id: pr-master
