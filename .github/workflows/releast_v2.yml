@@ -1,4 +1,4 @@
-name: "Release Workflow v2"
+name: "Release Workflow V2"
 
 on:
   workflow_dispatch:
@@ -33,6 +33,7 @@ jobs:
             echo "branch_exists=true" >> $GITHUB_ENV
           else
             echo "branch_exists=false" >> $GITHUB_ENV
+          fi
 
       - name: Create or switch to release branch
         run: |
@@ -88,24 +89,24 @@ jobs:
             I've updated the changelog and bumped the versions in the manifest files in this commit: ${{ steps.make-commit.outputs.commit }}.
             Merging this PR will update the develop branch with the release changes.
 
-  publish-new-release:
-    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
-    name: "Publish new release"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Extract version from branch name
-        run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          VERSION=${BRANCH_NAME#release/}
-          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+#   publish-new-release:
+#     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+#     name: "Publish new release"
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Extract version from branch name
+#         run: |
+#           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+#           VERSION=${BRANCH_NAME#release/}
+#           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Create Release
-        uses: thomaseizinger/create-release@1.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
-          tag_name: ${{ env.RELEASE_VERSION }}
-          name: ${{ env.RELEASE_VERSION }}
-          draft: false
-          prerelease: false
+#       - name: Create Release
+#         uses: thomaseizinger/create-release@1.0.0
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
+#           tag_name: ${{ env.RELEASE_VERSION }}
+#           name: ${{ env.RELEASE_VERSION }}
+#           draft: false
+#           prerelease: false
