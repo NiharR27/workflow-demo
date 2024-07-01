@@ -32,7 +32,7 @@ jobs:
         run: |
           release_branch="release-${{ github.event.inputs.version }}"
           echo "branch_name=$release_branch" >> $GITHUB_ENV
-          git fetch --prune --unshallow
+          git fetch --prune
           if git ls-remote --heads origin $release_branch; then
             git checkout $release_branch
             git pull origin $release_branch
