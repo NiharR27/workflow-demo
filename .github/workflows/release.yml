@@ -30,6 +30,9 @@ jobs:
       - name: Set release branch name
         run: echo "release_branch=release-${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
+      - name: Fetch all branches and tags
+        run: git fetch --prune
+
       - name: Check if release branch exists
         id: check_release_branch
         run: |
@@ -46,10 +49,8 @@ jobs:
             git pull origin ${{ env.release_branch }}
           else
             git checkout -b ${{ env.release_branch }}
+            git push --set-upstream origin ${{ env.release_branch }}
           fi
-
-      - name: Fetch all branches and tags
-        run: git fetch --prune
 
       - name: Bump version in package.json
         run: |
