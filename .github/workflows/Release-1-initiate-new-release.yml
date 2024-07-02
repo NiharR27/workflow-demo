@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          head: release/${{ github.event.inputs.version }}
+          branch: release/${{ github.event.inputs.version }}
           base: develop
           title: Release version ${{ github.event.inputs.version }}
           reviewers: ${{ github.actor }} #Assign the PR to the user who triggered the release
