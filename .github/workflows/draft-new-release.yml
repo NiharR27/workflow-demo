@@ -37,6 +37,9 @@ jobs:
 
           echo "::set-output name=commit::$(git rev-parse HEAD)"
 
+      - name: Pull remote changes
+        run: git pull origin release/${{ github.event.inputs.version }} --rebase
+
       - name: Push new branch
         run: git push origin release/${{ github.event.inputs.version }}
 
