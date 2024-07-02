@@ -1,4 +1,4 @@
-name: "Draft new release - Release step 1"
+name: "Release 1 - Initial New Release"
 
 on:
   workflow_dispatch:

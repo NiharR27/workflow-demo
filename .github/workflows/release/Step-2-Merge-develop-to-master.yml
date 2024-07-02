@@ -1,4 +1,4 @@
-name: "Create PR to merge develop into master - Step 2"
+name: "Release 2 - Create PR to merge develop into master"
 
 on:
   pull_request:
