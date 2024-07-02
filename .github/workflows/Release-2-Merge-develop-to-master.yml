@@ -24,7 +24,7 @@ jobs:
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create PR
-        uses: thomaseizinger/create-pull-request@1.0.0
+        uses: thomaseizinger/create-pull-request@1.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
