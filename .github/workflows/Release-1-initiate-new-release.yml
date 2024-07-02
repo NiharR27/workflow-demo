@@ -36,10 +36,11 @@ jobs:
         run: git push origin release/${{ github.event.inputs.version }}
 
       - name: Create pull request
-        uses: thomaseizinger/create-pull-request@1.4.0
+        uses: peter-evans/create-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           head: release/${{ github.event.inputs.version }}
           base: develop
           title: Release version ${{ github.event.inputs.version }}
