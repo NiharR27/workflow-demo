@@ -35,6 +35,13 @@ jobs:
       - name: Push new branch
         run: git push origin release/${{ github.event.inputs.version }}
 
+      - name: Make changes to pull request
+        run: |
+          # Example of making changes
+          echo "Update for version ${{ github.event.inputs.version }}" > version.txt
+          git add version.txt
+          git commit -m "Prepare release ${{ github.event.inputs.version }}"
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6
         env:
@@ -45,6 +52,10 @@ jobs:
           base: develop
           title: Release version ${{ github.event.inputs.version }}
           reviewers: ${{ github.actor }} #Assign the PR to the user who triggered the release
+          # team-reviewers: |
+          #   developers
+          #   qa-team
+          delete-branch: true
           body: |
             Hi @${{ github.actor }}!
 
