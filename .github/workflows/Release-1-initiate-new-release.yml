@@ -45,7 +45,7 @@ jobs:
           head: release/${{ github.event.inputs.version }}
           base: develop
           title: Release version ${{ github.event.inputs.version }}
-          reviewers: ${{ github.actor }}
+          reviewers: ${{ github.actor }} #Assign the PR to the user who triggered the release
           body: |
             Hi @${{ github.actor }}!
 

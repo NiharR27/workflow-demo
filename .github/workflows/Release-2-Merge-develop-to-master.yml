@@ -31,5 +31,6 @@ jobs:
           head: develop
           base: master
           title: Merge develop into master for release ${{ env.RELEASE_VERSION }}
+          reviewers: ${{ github.actor }} #Assign the PR to the user who merged the release branch
           body: |
             This PR merges the develop branch into master for the release ${{ env.RELEASE_VERSION }}.
