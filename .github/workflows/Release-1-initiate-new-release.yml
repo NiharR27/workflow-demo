@@ -36,12 +36,11 @@ jobs:
         run: git push origin release/${{ github.event.inputs.version }}
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: thomaseizinger/create-pull-request@1.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: origin/release/${{ github.event.inputs.version }}
+          head: release/${{ github.event.inputs.version }}
           base: develop
           title: Release version ${{ github.event.inputs.version }}
           reviewers: ${{ github.actor }} #Assign the PR to the user who triggered the release
