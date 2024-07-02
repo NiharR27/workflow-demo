@@ -47,7 +47,6 @@ jobs:
           # team-reviewers: |
           #   developers
           #   qa-team
-          delete-branch: true
           body: |
             Hi @${{ github.actor }}!
 
