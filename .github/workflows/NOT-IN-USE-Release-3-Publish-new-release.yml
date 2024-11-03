@@ -15,8 +15,3 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Get version from package.json
-        run: |
-          VERSION=$(node -e "console.log(require('./package.json').version)")
-          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
