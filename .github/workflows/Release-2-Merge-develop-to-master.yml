@@ -1,41 +1,33 @@
-name: "Release 2 - Create PR to merge develop into master"
+name: "Release 2 - Publish new release"
 
 on:
   pull_request:
     branches:
-      - develop
+      - master
     types:
       - closed
 
 jobs:
-  create-develop-to-master-pr:
-    name: "Create PR to merge develop into master"
+  publish-release:
+    name: Publish new release
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/')
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract version from merged PR
+      - name: Get version from package.json
         run: |
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          VERSION=${BRANCH_NAME#release/}
+          VERSION=$(node -e "console.log(require('./package.json').version)")
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Create PR
-        uses: thomaseizinger/create-pull-request@1.4.0
+      - name: Create Release
+        uses: thomaseizinger/create-release@1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          head: develop
-          base: master
-          title: Merge develop into master for release ${{ env.RELEASE_VERSION }}
-          reviewers: ${{ github.actor }} #Assign the PR to the user who merged the release branch
-          body: |
-            Hi @${{ github.actor }}!
-
-            This PR merges the develop branch into master for the release ${{ env.RELEASE_VERSION }}.
-            Once this PR is merged, the release will be published.
-
-            Happy merging!
+          target_commitish: ${{ github.event.pull_request.merge_commit_sha }}
+          tag_name: ${{ env.RELEASE_VERSION }}
+          name: ${{ env.RELEASE_VERSION }}
+          draft: false
+          prerelease: false
